@@ -1,6 +1,26 @@
 require 'spec_helper'
 
 describe NArray do
+  describe '#indgen' do
+    subject { NArray.int(6) }
+
+    it "should fill array with consecutive numbers" do
+      subject.indgen.should eq(NArray[0, 1, 2, 3, 4, 5])
+    end
+
+    it "should fill array with consecutive numbers from starting number" do
+      subject.indgen(2).should eq(NArray[2, 3, 4, 5, 6, 7])
+    end
+
+    it "should fill array with consecutive numbers with step" do
+      subject.indgen(0, 2).should eq(NArray[0, 2, 4, 6, 8, 10])
+    end
+
+    it "should return itself" do
+      subject.indgen.should eq(subject)
+    end
+  end
+
   describe '#shape' do
     it "should return the correct shape" do
       NArray[[1, 2, 3], [4, 5, 6]].shape.should eq([3, 2])

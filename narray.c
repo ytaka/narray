@@ -860,6 +860,9 @@ static void
 }
 
 /*
+ * call-seq:
+ *   reshape!(size1, size2, ..., sizeN)
+ *
  * Gives a new shape to an array without changing its data.
  *
  * The new shape should be compatible with the original shape. One shape
@@ -877,6 +880,7 @@ static void
  *   => NArray(ref).int(3,2):
  *   [ [ 1, 2, 3 ],
  *     [ 4, 5, 6 ] ]
+ *
  *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape(2, true, 2)
  *   => NArray(ref).int(2,2,2):
  *   [ [ [ 1, 2 ],
@@ -896,6 +900,9 @@ static VALUE
 }
 
 /*
+ * call-seq:
+ *   reshape(size1, size2, ..., sizeN)
+ *
  * Gives a new shape to an array without changing its data.
  *
  * The new shape should be compatible with the original shape. One shape
@@ -913,6 +920,7 @@ static VALUE
  *   => NArray(ref).int(3,2):
  *   [ [ 1, 2, 3 ],
  *     [ 4, 5, 6 ] ]
+ *
  *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape!(2, true, 2)
  *   => NArray(ref).int(2,2,2):
  *   [ [ [ 1, 2 ],
@@ -1041,26 +1049,46 @@ VALUE na_fill(VALUE self, volatile VALUE val)
 }
 
 
-/* method: indgen!([start,[step]]) */
+/*
+ * call-seq:
+ *   indgen!(start = 0, step = 1)
+ *   
+ * Fills the array with consecutive numbers.
+ *
+ *
+ * === Usage example
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen
+ *   => NArray.int(6):
+ *   [ 0, 1, 2, 3, 4, 5 ]
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen(5)
+ *   => NArray.int(6):
+ *   [ 5, 6, 7, 8, 9, 10 ]
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen(5, 3)
+ *   => NArray.int(6):
+ *   [ 5, 8, 11, 14, 17, 20 ]
+ */
 VALUE
  na_indgen(int argc, VALUE *argv, VALUE self)
 {
-  int start=0, step=1;
+  int start = 0, step = 1;
   struct NARRAY *ary;
 
-  if (argc>0) {
+  if (argc > 0) {
     start = NUM2INT(argv[0]);
-    if (argc==2)
+    if (argc == 2)
       step = NUM2INT(argv[1]);
     else
-      if (argc>2)
+      if (argc > 2)
 	rb_raise(rb_eArgError, "wrong # of arguments (%d for <= 2)", argc);
   }
 
   GetNArray(self,ary);
-  IndGenFuncs[ary->type]( ary->total,
-			  ary->ptr, na_sizeof[ary->type],
-			  start, step );
+  IndGenFuncs[ary->type](ary->total,
+			 ary->ptr, na_sizeof[ary->type],
+			 start, step );
   return self;
 }
 
