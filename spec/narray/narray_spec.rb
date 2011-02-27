@@ -22,6 +22,24 @@ describe NArray do
   end
 
   describe '#shape' do
+    it "should return size of array in each dimension" do
+      NArray[[1, 2, 3], [4, 5, 6]].shape.should eq([3, 2])
+    end
+  end
+
+  describe '#fill' do
+    subject { NArray[1, 2, 3, 4] }
+
+    it "should fill array with the values" do
+      subject.fill(5).should eq(NArray[5, 5, 5, 5])
+    end
+
+    it "should work in place" do
+      subject.fill(5).should eq(subject)
+    end
+  end
+
+  describe '#shape' do
     it "should return the correct shape" do
       NArray[[1, 2, 3], [4, 5, 6]].shape.should eq([3, 2])
     end

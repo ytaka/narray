@@ -513,7 +513,17 @@ static VALUE
 }
 
 
-/* method: shape() -- returns an array of shape of each rank */
+/* 
+ * call-seq:
+ *   shape()
+ *
+ * Returns size of array in each dimension.
+ *
+ * === Usage example
+ *
+ *   >> NArray[[1, 2, 3], [4, 5, 6]].shape
+ *   => [3, 2]
+ */
 static VALUE
  na_shape(VALUE self)
 {
@@ -1030,14 +1040,25 @@ VALUE
 }
 
 
-/* method: fill!(val) */
+/* call-seq:
+ *   fill!(value)
+ *
+ * Sets all elements inside the array to specified value.
+ *
+ * === Usage example
+ *   
+ *   >> a = NArray[1, 2, 3, 4]
+ *   >> a.fill(5)
+ *   => NArray.int(4):
+ *   [ 5, 5, 5, 5 ]
+ */
 VALUE na_fill(VALUE self, volatile VALUE val)
 {
   struct NARRAY *a1, *a2;
 
-  GetNArray(self,a1);
-  val = na_cast_unless_narray(val,a1->type);
-  GetNArray(val,a2);
+  GetNArray(self, a1);
+  val = na_cast_unless_narray(val, a1->type);
+  GetNArray(val, a2);
 
   if (a2->total != 1)
     rb_raise(rb_eArgError, "single-element argument required");
