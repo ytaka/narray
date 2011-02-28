@@ -539,7 +539,20 @@ static VALUE
 }
 
 
-/* method: rank() -- returns the rank of the array */
+/*
+ * call-seq:
+ *   rank()
+ *
+ * Returns the dimension of the array (the number of indices).
+ *
+ * === Usage example
+ *
+ *   >> NArray[1, 2, 3].rank
+ *   => 1
+ *
+ *   >> NArray[[1, 2], [3, 4]].rank
+ *   => 2
+ */
 static VALUE
  na_rank(VALUE self)
 {
@@ -569,7 +582,20 @@ static VALUE
 }
 
 
-/* method: element_size -- returns the element size of the array type */
+/*
+ * call-seq:
+ *   element_size
+ * 
+ * Returns the element size of the array type.
+ *
+ * === Usage example
+ *
+ *   >> NArray.int(3).element_size
+ *   => 4
+ *
+ *   >> NArray.byte(3).element_size
+ *   => 1
+ */
 static VALUE
  na_element_size(VALUE self)
 {
@@ -579,7 +605,23 @@ static VALUE
 }
 
 
-/* method: empty? -- returns true if empty array */
+/*
+ * call-seq:
+ *   empty?
+ *
+ * Returns true if array is empty.
+ *
+ * === Usage example
+ *
+ *   >> NArray[].empty?
+ *   => true
+ *
+ *   >> NArray[[], []].empty?
+ *   => true
+ *
+ *   >> NArray[[1, 2]].empty?
+ *   => false
+ */
 static VALUE
  na_is_empty(VALUE self)
 {
@@ -881,18 +923,17 @@ static void
  *
  * === Notes
  *
- * This method will leave the array unchanged and return a new array. See
- * #reshape for the in place version.
+ * This method will leave the array unchanged and return a new array.
  *
  * === Usage example
  *
- *   >> NArray[1, 2, 3, 4, 5, 6].reshape(3, 2)
- *   => NArray(ref).int(3,2):
+ *   >> NArray[1, 2, 3, 4, 5, 6].reshape!(3, 2)
+ *   => NArray.int(3,2):
  *   [ [ 1, 2, 3 ],
  *     [ 4, 5, 6 ] ]
  *
- *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape(2, true, 2)
- *   => NArray(ref).int(2,2,2):
+ *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape!(2, true, 2)
+ *   => NArray.int(2,2,2):
  *   [ [ [ 1, 2 ],
  *       [ 3, 4 ] ],
  *     [ [ 5, 6 ],
@@ -921,17 +962,17 @@ static VALUE
  *
  * === Notes
  *
- * This method will change the current array. See #reshape! for the in place
- * version.
+ * This method will create the view of the same array with different shape (by
+ * changing value in new array, value in old array also will be changed)
  *
  * === Usage example
  *
- *   >> NArray[1, 2, 3, 4, 5, 6].reshape!(3, 2)
+ *   >> NArray[1, 2, 3, 4, 5, 6].reshape(3, 2)
  *   => NArray(ref).int(3,2):
  *   [ [ 1, 2, 3 ],
  *     [ 4, 5, 6 ] ]
  *
- *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape!(2, true, 2)
+ *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape(2, true, 2)
  *   => NArray(ref).int(2,2,2):
  *   [ [ [ 1, 2 ],
  *       [ 3, 4 ] ],
@@ -1043,7 +1084,7 @@ VALUE
 /* call-seq:
  *   fill!(value)
  *
- * Sets all elements inside the array to specified value.
+ * Sets all elements inside the array to specified +value+.
  *
  * === Usage example
  *   
@@ -1074,7 +1115,7 @@ VALUE na_fill(VALUE self, volatile VALUE val)
  * call-seq:
  *   indgen!(start = 0, step = 1)
  *   
- * Fills the array with consecutive numbers.
+ * Fills the array with values from +start+ with +step+ increment.
  *
  *
  * === Usage example

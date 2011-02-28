@@ -17,7 +17,7 @@ describe NArray do
     end
 
     it "should return itself" do
-      subject.indgen.should eq(subject)
+      subject.indgen.should equal(subject)
     end
   end
 
@@ -35,7 +35,7 @@ describe NArray do
     end
 
     it "should work in place" do
-      subject.fill(5).should eq(subject)
+      subject.fill(5).should equal(subject)
     end
   end
 
@@ -46,8 +46,16 @@ describe NArray do
   end
 
   describe '#rank' do
-    it "should return correct rank" do
-      NArray[[1, 2], [3, 4]].rank.should == 2
+    it "should return correct rank for empty array" do
+      NArray[].rank.should eq(0)
+    end
+
+    it "should return correct rank for one dimensional array" do
+      NArray[1, 2, 3].rank.should eq(1)
+    end
+
+    it "should return correct rank for two dimensional array" do
+      NArray[[1, 2], [3, 4]].rank.should eq(2)
     end
   end
 
@@ -60,6 +68,10 @@ describe NArray do
 
     it "should return new object" do
       subject.reshape(3, 2).should_not eq(subject)
+    end
+
+    it "should refer to the same data" do
+      subject.reshape(3, 2).should refer(subject)
     end
 
     it "should guess size of one dimension" do
@@ -82,8 +94,60 @@ describe NArray do
       subject.reshape!(3, 2).should eq(NArray[[0, 1, 2], [3, 4, 5]])
     end
 
-    it "should return itself" do
-      subject.reshape!(3, 2).should eq(subject)
+    it "should not refer the same data" do
+      subject.reshape!(3, 2).should_not refer(subject)
     end
+  end
+
+  describe '#element_size' do
+    it "should return 4 for integer array" do
+      NArray.int(3).element_size.should eq(4)
+    end
+
+    it "should return 1 for byte array" do
+      NArray.byte(3).element_size.should eq(1)
+    end
+  end
+
+  describe '#empty?' do
+    it "should return true for empty array" do
+      NArray[].should be_empty
+    end
+
+    it "should return true for empty two dimensional array" do
+      NArray[[], []].should be_empty
+    end
+
+    it "should return false for two dimensional array" do
+      NArray[[1, 2], [3, 4]].should_not be_empty
+    end
+  end
+
+  describe '#flatten' do
+    subject { NArray[[1, 2], [3, 4]] }
+    it "should change two dimensional array into one dimensional" do
+      subject.flatten.should eq(NArray[1, 2, 3, 4])
+    end
+
+    it "should refer to the same data" do
+      subject.flatten.should refer(subject)
+    end
+  end
+
+  describe '#flatten!' do
+    subject { NArray[[1, 2], [3, 4]] }
+    it "should change two dimensional array into one dimensional" do
+      subject.flatten!.should eq(NArray[1, 2, 3, 4])
+    end
+
+    it "should refer to the same data" do
+      subject.flatten!.should_not refer(subject)
+    end
+  end
+end
+
+RSpec::Matchers.define :refer do |original_array|
+  match do |actual_array|
+    actual_array.original.should equal(original_array)
   end
 end
