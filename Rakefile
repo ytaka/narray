@@ -99,3 +99,7 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
   spec.rcov = true
 end
+
+task :unit_tests do
+  ruby "-I.:lib test/unit_tests.rb"
+end
