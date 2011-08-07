@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'yaml'
 
 spec = YAML.load <<EOF
@@ -79,7 +79,7 @@ test_files: []
 
 EOF
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
   pkg.package_files.each{|x| file x => "src"}
