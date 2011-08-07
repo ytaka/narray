@@ -10,6 +10,14 @@
 require 'narray/narray'
 
 class NArray
+  def _dump(limit)
+    Marshal.dump([self.class, to_a])
+  end
+
+  def self._load(str)
+    cl, ary = Marshal.load(str)
+    cl.to_na(ary)
+  end
 
   def integer?
     self.typecode==NArray::BYTE ||
