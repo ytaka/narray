@@ -13,3 +13,6 @@ na_op.c
 
 pkg/
 *.swp
+
+*.bundle
+Gemfile.lock

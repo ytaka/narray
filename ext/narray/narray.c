@@ -1441,7 +1441,4 @@ void
     na_id_class_dim = rb_intern("CLASS_DIMENSION");
 
     Init_na_linalg();
-
-    /* NArray extention script */
-    rb_require("narray_ext.rb");
 }

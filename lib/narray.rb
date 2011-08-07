@@ -6,6 +6,9 @@
 #  under the same terms as Ruby itself.
 #  NO WARRANTY.
 #
+
+require 'narray/narray'
+
 class NArray
 
   def integer?
