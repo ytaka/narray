@@ -100,6 +100,7 @@ RSpec::Core::RakeTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
+desc "Run unit tests"
 task :unit_tests do
   ruby "-I.:lib test/unit_tests.rb"
 end
