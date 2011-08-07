@@ -49,7 +49,7 @@ files:
 - src/narray_local.h
 - src/lib/narray_ext.rb
 - src/lib/nmatrix.rb
-has_rdoc: false
+has_rdoc: true
 homepage: http://narray.rubyforge.org/
 post_install_message:
 rdoc_options: []

@@ -101,7 +101,7 @@ static void
 {
   if ( ary->total > 0 ) {
     if (ary->ref == Qnil || ary->ref == Qtrue) {  /* non reference */
-      xfree(ary->ptr); 
+      xfree(ary->ptr);
     }
     xfree(ary->shape);
 #ifdef DEBUG
@@ -127,7 +127,7 @@ struct NARRAY*
   if (rank<=0 || total<=0) {
     /* empty array */
     ary = ALLOC(struct NARRAY);
-    ary->rank  = 
+    ary->rank  =
     ary->total = 0;
     ary->shape = NULL;
     ary->ptr   = NULL;
@@ -231,7 +231,7 @@ VALUE
   if (type==NA_ROBJ) {
     rb_mem_clear((VALUE*)(na->ptr), na->total);
   }
-  return na_wrap_struct_class(na, klass);  
+  return na_wrap_struct_class(na, klass);
 }
 
 
@@ -257,7 +257,7 @@ VALUE
   struct NARRAY *na;
 
   na = na_alloc_struct(type, 0, NULL);
-  return na_wrap_struct_class(na, klass);  
+  return na_wrap_struct_class(na, klass);
 }
 
 
@@ -513,7 +513,17 @@ static VALUE
 }
 
 
-/* method: shape() -- returns an array of shape of each rank */
+/* 
+ * call-seq:
+ *   shape()
+ *
+ * Returns size of array in each dimension.
+ *
+ * === Usage example
+ *
+ *   >> NArray[[1, 2, 3], [4, 5, 6]].shape
+ *   => [3, 2]
+ */
 static VALUE
  na_shape(VALUE self)
 {
@@ -521,15 +531,28 @@ static VALUE
   VALUE *shape;
   int i;
 
-  GetNArray(self,ary);
-  shape = ALLOCA_N(VALUE,ary->rank);
+  GetNArray(self, ary);
+  shape = ALLOCA_N(VALUE, ary->rank);
   for (i = 0; i < ary->rank; ++i)
     shape[i] = INT2FIX(ary->shape[i]);
-  return rb_ary_new4(ary->rank,shape);
+  return rb_ary_new4(ary->rank, shape);
 }
 
 
-/* method: rank() -- returns the rank of the array */
+/*
+ * call-seq:
+ *   rank()
+ *
+ * Returns the dimension of the array (the number of indices).
+ *
+ * === Usage example
+ *
+ *   >> NArray[1, 2, 3].rank
+ *   => 1
+ *
+ *   >> NArray[[1, 2], [3, 4]].rank
+ *   => 2
+ */
 static VALUE
  na_rank(VALUE self)
 {
@@ -559,7 +582,20 @@ static VALUE
 }
 
 
-/* method: element_size -- returns the element size of the array type */
+/*
+ * call-seq:
+ *   element_size
+ * 
+ * Returns the element size of the array type.
+ *
+ * === Usage example
+ *
+ *   >> NArray.int(3).element_size
+ *   => 4
+ *
+ *   >> NArray.byte(3).element_size
+ *   => 1
+ */
 static VALUE
  na_element_size(VALUE self)
 {
@@ -569,7 +605,23 @@ static VALUE
 }
 
 
-/* method: empty? -- returns true if empty array */
+/*
+ * call-seq:
+ *   empty?
+ *
+ * Returns true if array is empty.
+ *
+ * === Usage example
+ *
+ *   >> NArray[].empty?
+ *   => true
+ *
+ *   >> NArray[[], []].empty?
+ *   => true
+ *
+ *   >> NArray[[1, 2]].empty?
+ *   => false
+ */
 static VALUE
  na_is_empty(VALUE self)
 {
@@ -610,7 +662,7 @@ static VALUE
     if ( len != str_len )
       rb_raise(rb_eArgError, "size mismatch");
   }
-  
+
   v = na_make_object( type, rank, shape, cNArray );
   GetNArray(v,ary);
   memcpy( ary->ptr, RSTRING_PTR(str), ary->total*na_sizeof[type] );
@@ -720,7 +772,7 @@ static VALUE
 }
 
 
-/* singleton method: 
+/* singleton method:
    NArray.to_na( string, type, size1,size2,...,sizeN )
    NArray.to_na( array )
 */
@@ -751,7 +803,7 @@ static VALUE
 }
 
 
-/* singleton method: 
+/* singleton method:
    NArray[object]
 */
 static VALUE
@@ -813,27 +865,27 @@ static void
  na_reshape(int argc, VALUE *argv, struct NARRAY *ary, VALUE self)
 {
   int *shape, class_dim;
-  int  i, total=1, unfixed=-1;
+  int  i, total = 1, unfixed = -1;
   VALUE klass;
 
-  if (ary->total==0)
-    rb_raise(rb_eRuntimeError, "cannot reshape empty array");
+  if (ary->total == 0)
+    rb_raise(rb_eRuntimeError, "Cannot reshape empty array.");
 
   klass = CLASS_OF(self);
   class_dim = NUM2INT(rb_const_get(klass, na_id_class_dim));
 
   if (argc == 0) {  /* trim ranks of size=1 */
-    shape = ALLOCA_N(int,ary->rank+1);
-    for (i=0; i<class_dim; ++i) shape[i]=0;
-    for (   ; i<ary->rank; ++i) shape[i]=1;
-    na_shrink_rank( self, class_dim, shape );
-    if (ary->rank==0) ary->rank=1;
+    shape = ALLOCA_N(int, ary->rank + 1);
+    for (i = 0; i < class_dim; ++i) shape[i] = 0;
+    for (     ; i < ary->rank; ++i) shape[i] = 1;
+    na_shrink_rank(self, class_dim, shape);
+    if (ary->rank == 0) ary->rank = 1;
     return;
   }
 
   /* get shape from argument */
-  shape = ALLOC_N(int,argc);
-  for (i=0; i<argc; ++i)
+  shape = ALLOC_N(int, argc);
+  for (i = 0; i < argc; ++i)
     switch(TYPE(argv[i])) {
     case T_FIXNUM:
       total *= shape[i] = NUM2INT(argv[i]);
@@ -842,16 +894,16 @@ static void
       unfixed = i;
       break;
     default:
-      rb_raise(rb_eArgError,"illegal type");
+      rb_raise(rb_eArgError, "Illegal type of the argument.");
     }
 
-  if (unfixed>=0) {
+  if (unfixed >= 0) {
     if (ary->total % total != 0)
-      rb_raise(rb_eArgError, "Total size size must be divisor");
+      rb_raise(rb_eArgError, "Total size must be a divisor of current size.");
     shape[unfixed] = ary->total / total;
   }
   else if (total != ary->total)
-    rb_raise(rb_eArgError, "Total size must be same");
+    rb_raise(rb_eArgError, "Total size must be the same.");
 
   /* exchange */
   xfree(ary->shape);
@@ -859,8 +911,35 @@ static void
   ary->rank = argc;
 }
 
-
-/* method: reshape!(size1,size2,...,sizeN) */
+/*
+ * call-seq:
+ *   reshape!(size1, size2, ..., sizeN)
+ *
+ * Gives a new shape to an array without changing its data.
+ *
+ * The new shape should be compatible with the original shape. One shape
+ * dimension can be +true+. In this case, the value is inferred from the length
+ * of the array and remaining dimensions.
+ *
+ * === Notes
+ *
+ * This method will leave the array unchanged and return a new array.
+ *
+ * === Usage example
+ *
+ *   >> NArray[1, 2, 3, 4, 5, 6].reshape!(3, 2)
+ *   => NArray.int(3,2):
+ *   [ [ 1, 2, 3 ],
+ *     [ 4, 5, 6 ] ]
+ *
+ *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape!(2, true, 2)
+ *   => NArray.int(2,2,2):
+ *   [ [ [ 1, 2 ],
+ *       [ 3, 4 ] ],
+ *     [ [ 5, 6 ],
+ *       [ 7, 8 ] ] ]
+ *
+ */
 static VALUE
  na_reshape_bang(int argc, VALUE *argv, VALUE self)
 {
@@ -871,8 +950,36 @@ static VALUE
   return self;
 }
 
-
-/* method: reshape(size1,size2,...,sizeN) */
+/*
+ * call-seq:
+ *   reshape(size1, size2, ..., sizeN)
+ *
+ * Gives a new shape to an array without changing its data.
+ *
+ * The new shape should be compatible with the original shape. One shape
+ * dimension can be +true+. In this case, the value is inferred from the length
+ * of the array and remaining dimensions.
+ *
+ * === Notes
+ *
+ * This method will create the view of the same array with different shape (by
+ * changing value in new array, value in old array also will be changed)
+ *
+ * === Usage example
+ *
+ *   >> NArray[1, 2, 3, 4, 5, 6].reshape(3, 2)
+ *   => NArray(ref).int(3,2):
+ *   [ [ 1, 2, 3 ],
+ *     [ 4, 5, 6 ] ]
+ *
+ *   >> NArray[1, 2, 3, 4, 5, 6, 7, 8].reshape(2, true, 2)
+ *   => NArray(ref).int(2,2,2):
+ *   [ [ [ 1, 2 ],
+ *       [ 3, 4 ] ],
+ *     [ [ 5, 6 ],
+ *       [ 7, 8 ] ] ]
+ *
+ */
 static VALUE
  na_reshape_ref(int argc, VALUE *argv, VALUE self)
 {
@@ -974,45 +1081,76 @@ VALUE
 }
 
 
-/* method: fill!(val) */
+/* call-seq:
+ *   fill!(value)
+ *
+ * Sets all elements inside the array to specified +value+.
+ *
+ * === Usage example
+ *   
+ *   >> a = NArray[1, 2, 3, 4]
+ *   >> a.fill(5)
+ *   => NArray.int(4):
+ *   [ 5, 5, 5, 5 ]
+ */
 VALUE na_fill(VALUE self, volatile VALUE val)
 {
   struct NARRAY *a1, *a2;
 
-  GetNArray(self,a1);
-  val = na_cast_unless_narray(val,a1->type);
-  GetNArray(val,a2);
+  GetNArray(self, a1);
+  val = na_cast_unless_narray(val, a1->type);
+  GetNArray(val, a2);
 
   if (a2->total != 1)
     rb_raise(rb_eArgError, "single-element argument required");
 
-  SetFuncs[a1->type][a2->type]( a1->total, 
+  SetFuncs[a1->type][a2->type]( a1->total,
 				a1->ptr, na_sizeof[a1->type],
 				a2->ptr, 0 );
   return self;
 }
 
 
-/* method: indgen!([start,[step]]) */
+/*
+ * call-seq:
+ *   indgen!(start = 0, step = 1)
+ *   
+ * Fills the array with values from +start+ with +step+ increment.
+ *
+ *
+ * === Usage example
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen
+ *   => NArray.int(6):
+ *   [ 0, 1, 2, 3, 4, 5 ]
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen(5)
+ *   => NArray.int(6):
+ *   [ 5, 6, 7, 8, 9, 10 ]
+ *
+ *   >> NArray[0, 0, 0, 0, 0, 0].indgen(5, 3)
+ *   => NArray.int(6):
+ *   [ 5, 8, 11, 14, 17, 20 ]
+ */
 VALUE
  na_indgen(int argc, VALUE *argv, VALUE self)
 {
-  int start=0, step=1;
+  int start = 0, step = 1;
   struct NARRAY *ary;
 
-  if (argc>0) {
+  if (argc > 0) {
     start = NUM2INT(argv[0]);
-    if (argc==2)
+    if (argc == 2)
       step = NUM2INT(argv[1]);
     else
-      if (argc>2)
+      if (argc > 2)
 	rb_raise(rb_eArgError, "wrong # of arguments (%d for <= 2)", argc);
   }
 
   GetNArray(self,ary);
-  IndGenFuncs[ary->type]( ary->total, 
-			  ary->ptr, na_sizeof[ary->type],
-			  start, step );
+  IndGenFuncs[ary->type](ary->total,
+			 ary->ptr, na_sizeof[ary->type],
+			 start, step );
   return self;
 }
 
