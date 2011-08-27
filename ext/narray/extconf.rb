@@ -46,7 +46,7 @@ if RUBY_VERSION < '1.8'
     end
   end
 else
-  $INSTALLFILES = [['narray.h', '$(archdir)'], ['narray_config.h', '$(archdir)']] 
+  $INSTALLFILES = [['narray.h', '$(archdir)'], ['narray_config.h', '$(archdir)']]
   if /cygwin|mingw/ =~ RUBY_PLATFORM
 	 $INSTALLFILES << ['libnarray.a', '$(archdir)']
   end
@@ -54,7 +54,7 @@ end
 
 if /cygwin|mingw/ =~ RUBY_PLATFORM
   if RUBY_VERSION >= '1.9.0'
-    $DLDFLAGS << " -Wl,--out-implib=libnarray.a"
+    $DLDFLAGS << " -Wl,--export-all,--out-implib=libnarray.a"
   elsif RUBY_VERSION > '1.8.0'
     $DLDFLAGS << ",--out-implib=libnarray.a"
   elsif RUBY_VERSION > '1.8'
@@ -67,12 +67,6 @@ end
 
 #$DEBUG = true
 #$CFLAGS = ["-Wall",$CFLAGS].join(" ")
-
-# configure options:
-#  --with-fftw-dir=path
-#  --with-fftw-include=path
-#  --with-fftw-lib=path
-#dir_config("fftw")
 
 srcs = %w(
 narray
@@ -99,17 +93,6 @@ have_type("int16_t", header)
 have_type("int32_t", header)
 have_type("u_int32_t", header)
 have_type("uint32_t", header)
-#have_library("m")
-#have_func("sincos")
-#have_func("asinh")
-
-#if have_header("fftw.h")
-#  if have_library("fftw", "fftwnd_create_plan")
-#    srcs.push "na_fftw"
-#  else
-#    $defs.delete "-DHAVE_FFTW_H"
-#  end
-#end
 
 $objs = srcs.collect{|i| i+".o"}
 

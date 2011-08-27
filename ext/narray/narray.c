@@ -117,12 +117,17 @@ static void
 struct NARRAY*
  na_alloc_struct(int type, int rank, int *shape)
 {
-  int total=1;
+  int total=1, total_bak;
   int i, memsz;
   struct NARRAY *ary;
 
-  for (i=0; i<rank; ++i)
-    total *= shape[i];
+  for (i=0; i<rank; ++i) {
+    total_bak = total;
+    total = total_bak * shape[i];
+    if (total>2147483647 || total/shape[i] != total_bak) {
+      rb_raise(rb_eArgError, "array size is too large");
+    }
+  }
 
   if (rank<=0 || total<=0) {
     /* empty array */
@@ -135,6 +140,10 @@ struct NARRAY*
   }
   else {
     memsz = na_sizeof[type] * total;
+
+    if (memsz>2147483647 || memsz/na_sizeof[type] != total) {
+      rb_raise(rb_eArgError, "allocation size is too large");
+    }
 
     /* Garbage Collection */
 #ifdef NARRAY_GC
@@ -1148,9 +1157,9 @@ VALUE
   }
 
   GetNArray(self,ary);
-  IndGenFuncs[ary->type](ary->total,
-			 ary->ptr, na_sizeof[ary->type],
-			 start, step );
+  IndGenFuncs[ary->type]( ary->total,
+			  ary->ptr, na_sizeof[ary->type],
+			  start, step );
   return self;
 }
 
