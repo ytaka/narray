@@ -1,3 +1,3 @@
 class NArray
-  VERSION = "0.5.9p9"
+  VERSION = "0.6.0.0"
 end
